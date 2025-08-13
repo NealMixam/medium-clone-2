@@ -5,11 +5,12 @@
         <div class="col-md-6 offset-md-3 col-xs-12">
           <h1 class="text-xs-center">Sign up</h1>
           <p class="text-xs-center">
-            <router-link :to="{name: 'login'}">
-              Need an account?
-            </router-link>
+            <router-link :to="{name: 'login'}"> Need an account? </router-link>
           </p>
-          VALIDATION ERRORS
+          <mcv-validation-errors
+            v-if="validationErrors"
+            :validation-errors="validationErrors"
+          />
           <form @submit.prevent="onSubmit">
             <fieldset class="form-group">
               <input
@@ -35,9 +36,9 @@
                 v-model="password"
               />
             </fieldset>
-            <button 
-                class="btn btn-lg btn-primary pull-xs-right" 
-                :disabled="isSubmitting"
+            <button
+              class="btn btn-lg btn-primary pull-xs-right"
+              :disabled="isSubmitting"
             >
               Sign Up
             </button>
@@ -49,32 +50,42 @@
 </template>
 
 <script>
+import McvValidationErrors from '@/components/ValidationErrors.vue'
+
 export default {
   name: 'McvRegister',
+  components: {
+    McvValidationErrors,
+  },
   data() {
     return {
       email: '',
       password: '',
-      username: ''
+      username: '',
     }
   },
   computed: {
     isSubmitting() {
-        return this.$store.state.auth.isSubmitting
-    }
+      return this.$store.state.auth.isSubmitting
+    },
+    validationErrors() {
+      return this.$store.state.auth.validationErrors
+    },
   },
   methods: {
     onSubmit() {
       console.log('Form submitted!')
-      this.$store.dispatch('register', {
-        email: this.email,
-        username: this.username,
-        password: this.password
-      }).then(user => {
-        console.log('User registered:', user);
-        this.$router.push({name: 'home'});  
-      })
-    }
-  }
+      this.$store
+        .dispatch('register', {
+          email: this.email,
+          username: this.username,
+          password: this.password,
+        })
+        .then((user) => {
+          console.log('User registered:', user)
+          this.$router.push({name: 'home'})
+        })
+    },
+  },
 }
 </script>
